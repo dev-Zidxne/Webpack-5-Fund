@@ -21,7 +21,7 @@ if (devMode) {
 }
 
 module.exports = {
-  mode: "development",
+  mode: "production",
   entry: "./src/index.js",
   devServer: {
     static: "./dist",
@@ -56,7 +56,7 @@ module.exports = {
 
   plugins: [
     new HtmlWebpackPlugin({
-      title: "Development",
+      title: "Production",
     }),
     new MiniCssExtractPlugin({
       filename: "[name].css",
