@@ -1,11 +1,32 @@
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const path = require("path");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+
+const devMode = process.env.NODE_ENV !== "production";
+const webpack = require("webpack");
+
+const webpackDevServer = require("webpack-dev-server");
+
+const plugins = [
+  new MiniCssExtractPlugin({
+    // Options similar to the same options in webpackOptions.output
+    // both options are optional
+    filename: devMode ? "[name].css" : "[name].[contenthash].css",
+    chunkFilename: devMode ? "[id].css" : "[id].[contenthash].css",
+  }),
+];
+if (devMode) {
+  // only enable hot in development
+  plugins.push(new webpack.HotModuleReplacementPlugin());
+}
 
 module.exports = {
   mode: "development",
   entry: "./src/index.js",
   devServer: {
     static: "./dist",
+    hot: true,
+    contentBase: path.resolve(__dirname, "dist"),
   },
   module: {
     rules: [
@@ -21,7 +42,14 @@ module.exports = {
       },
       {
         test: /\.scss$/i,
-        use: ["style-loader", "css-loader", "sass-loader"],
+        use: [
+          {
+            loader: MiniCssExtractPlugin.loader,
+          },
+          "css-loader",
+          "postcss-loader",
+          "sass-loader",
+        ],
       },
     ],
   },
@@ -29,6 +57,9 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
       title: "Development",
+    }),
+    new MiniCssExtractPlugin({
+      filename: "[name].css",
     }),
   ],
   output: {
